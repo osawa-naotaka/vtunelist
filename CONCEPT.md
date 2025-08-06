@@ -31,12 +31,12 @@
 
 ### 利用サービス
 
-| サービス | 用途 | 料金 | 制限事項 |
-|---------|------|------|----------|
-| Google Spreadsheet | 楽曲データ管理 | 無料 | - |
-| GitHub | ソースコード管理・認証 | 無料 | Public repository |
-| GitHub Pages | Webサイトホスティング | 無料 | 1GB容量制限 |
-| GitHub Actions | サイト生成・デプロイ | 無料 | 月2000分まで |
+| サービス               | 用途           | 料金 | 制限事項              |
+|--------------------|--------------|----|-------------------|
+| Google Spreadsheet | 楽曲データ管理      | 無料 | -                 |
+| GitHub             | ソースコード管理・認証  | 無料 | Public repository |
+| GitHub Pages       | Webサイトホスティング | 無料 | 1GB容量制限           |
+| GitHub Actions     | サイト生成・デプロイ   | 無料 | 月2000分まで          |
 
 ### 技術構成
 
@@ -93,7 +93,7 @@ GitHub Pages (Webサイト公開)
 
 2. **Webサイト更新**
     - GitHubの「Actions」タブ
-    - 「Update Songlist」ワークフローを手動実行
+    - 「Update Song List」ワークフローを手動実行
     - 所要時間: 3-5分
 
 ### セキュリティ設計
