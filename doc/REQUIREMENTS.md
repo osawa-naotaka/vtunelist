@@ -231,7 +231,7 @@ VtuneListは、Vtuberの歌枠配信をより効率的に運営するための�
 Webサイトで使用されるJSONデータの構造:
 
 ```json
-{ "categories": { "ジャンル名1": [ { "title": "曲名", "artist": "アーティスト名", "note": "メモ" }, ... ], "ジャンル名2": [ ... ] }, "updated_at": "更新日時（ISO形式）" }
+{ "categories": { "ジャンル名1": [ { "title": "曲名", "artist": "アーティスト名", "note": "メモ" } ] }, "updated_at": "更新日時（ISO形式）" }
 ```
 
 ### 4.3 設定ファイル構造
