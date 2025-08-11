@@ -121,18 +121,10 @@ GitHub Pages (Webサイト公開)
 
 #### 生成JSON構造
 ```json
-{
-  "categories": {
-    "アニソン": [
-      {
-        "title": "残酷な天使のテーゼ",
-        "artist": "高橋洋子", 
-        "note": "定番"
-      }
-    ]
-  },
-  "updated_at": "2025-01-15T10:30:00Z"
-}
+[
+  { "title": "花に亡霊", "artist": "ヨルシカ", "genre": ["J-POP, 夜好性"], "note": "得意曲" },
+  { "title": "Self Producer", "artist": "茅原実里", "genre": ["アニソン"] },
+]
 ```
 
 ### 制限事項・注意点
