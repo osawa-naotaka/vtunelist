@@ -4,13 +4,16 @@
   "devDependencies": {
     "@anthropic-ai/claude-code": "^1.0.70",
     "@biomejs/biome": "^2.1.4",
+    "tsx": "^4.20.3",
     "typescript": "~5.8.3",
-    "zephblaze": "^0.1.0-alpha.1"
+    "zephblaze": "^0.1.0-alpha.3"
   },
   "private": true,
   "scripts": {
     "dev": "tsc --watch & zephblaze dev",
     "build": "tsc && zephblaze build",
+    "node-build": "tsc && NODE_OPTIONS='--import tsx' zephblaze build",
+    "node-dev": "tsc --watch & NODE_OPTIONS='--import tsx' zephblaze dev",
     "check": "biome check --write index.html ./src"
   },
   "type": "module"

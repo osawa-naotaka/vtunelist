@@ -13,7 +13,7 @@
     devShells.${system}.default = pkgs.mkShell {
       buildInputs = with pkgs; [
         yarn-berry
-        nodejs_23
+        nodejs_24
         bun
         deno
       ];

@@ -3613,7 +3613,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.19.3":
+"tsx@npm:^4.19.3, tsx@npm:^4.20.3":
   version: 4.20.3
   resolution: "tsx@npm:4.20.3"
   dependencies:
@@ -3816,8 +3816,9 @@ __metadata:
   dependencies:
     "@anthropic-ai/claude-code": "npm:^1.0.70"
     "@biomejs/biome": "npm:^2.1.4"
+    tsx: "npm:^4.20.3"
     typescript: "npm:~5.8.3"
-    zephblaze: "npm:^0.1.0-alpha.1"
+    zephblaze: "npm:^0.1.0-alpha.3"
   languageName: unknown
   linkType: soft
 
@@ -3987,9 +3988,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zephblaze@npm:^0.1.0-alpha.1":
-  version: 0.1.0-alpha.1
-  resolution: "zephblaze@npm:0.1.0-alpha.1"
+"zephblaze@npm:^0.1.0-alpha.3":
+  version: 0.1.0-alpha.3
+  resolution: "zephblaze@npm:0.1.0-alpha.3"
   dependencies:
     "@fortawesome/fontawesome-free": "npm:^6.7.2"
     "@rollup/plugin-commonjs": "npm:^28.0.3"
@@ -4018,7 +4019,7 @@ __metadata:
     ws: "npm:^8.18.1"
   bin:
     zephblaze: build/bin.js
-  checksum: 10c0/8c8f869581c6b7bb8418427db64715c9a27a547736f7d16729cc3aaca50a16ee61eedf3d4b0df377570e94e5008844c27ac7d408e4b57bc157b6069d34008e0b
+  checksum: 10c0/2d85682707e79ce45ef04b4c106241806e8f41249561686cc607a8b6fa7deef76b9195bf2de03f0c81b55e9d2a22d05fe818b9582a7c59289536254ef3163f97
   languageName: node
   linkType: hard
 
