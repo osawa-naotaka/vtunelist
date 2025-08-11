@@ -1,25 +1,17 @@
 {
   "name": "vtunelist",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "bunx --bun vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "check": "biome check --write index.html ./src"
-  },
-  "dependencies": {
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
-  },
+  "version": "0.1.0",
   "devDependencies": {
     "@anthropic-ai/claude-code": "^1.0.70",
     "@biomejs/biome": "^2.1.4",
-    "@types/react": "^19.1.9",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react-swc": "^3.11.0",
     "typescript": "~5.8.3",
-    "vite": "^7.1.0"
-  }
+    "zephblaze": "^0.1.0-alpha.1"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "tsc --watch & zephblaze dev",
+    "build": "tsc && zephblaze build",
+    "check": "biome check --write index.html ./src"
+  },
+  "type": "module"
 }
