@@ -22,9 +22,9 @@
 - [x] ユーザーストーリー作成
 
 #### Deliverable
-- CONCEPT.md
-- REQUIREMENTS.md
-- USER_STORIES.md
+- 01_CONCEPT.md
+- 02_REQUIREMENTS.md
+- 03_USER_STORIES.md
 
 #### 完了基準
 - 全ての要件が文書化され、ステークホルダーが承認
@@ -35,21 +35,17 @@
 
 #### 作業内容
 - [x] 機能仕様書作成
-- [ ] 技術スタックの確定
+- [x] 技術スタックの確定
   - 静的サイト生成ツール選定
   - CSS フレームワーク選定
   - JavaScript ライブラリ選定
 - [ ] UI/UXワイヤーフレーム作成
-- [x] 実装仕様書作成
-  - 静的サイト生成
-  - フロントエンド
 
 #### Deliverable
-- FUNCTIONAL_SPEC.md
-- TECH_STACK.md
-- BUILD_SPEC.md (静的サイト生成)
-- FRONTEND_SPEC.md
-- UI_WIREFRAMES.md (mermaid)
+- 04_FUNCTIONAL_SPEC.md
+- 05_TECH_STACK.md
+- 06_UI_WIREFRAMES/... (SVG)
+  - 06_UI_WIREFRAMES/00_HTML_ROOT_VIEW.svgのような名前を付ける
 
 #### 完了基準
 - 全ての実装するコンポーネントと相互作用が設計文書に記載
