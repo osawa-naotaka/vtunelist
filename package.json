@@ -2,7 +2,7 @@
   "name": "vtunelist",
   "version": "0.1.0",
   "devDependencies": {
-    "@anthropic-ai/claude-code": "^1.0.70",
+    "@anthropic-ai/claude-code": "^1.0.80",
     "@biomejs/biome": "^2.1.4",
     "tsx": "^4.20.3",
     "typescript": "~5.8.3",
