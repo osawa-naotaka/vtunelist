@@ -6,152 +6,98 @@
 
 ## 2. システム概要図
 
+### 2.1 自動サイト更新システム
 ```mermaid
 graph TB
-    %% 外部アクター
-    V[Vtuber]
-    L[リスナー]
-    
-    %% 外部サービス
-    GS[Google Spreadsheet]
-    GR[GitHub Repository]
-    GP[GitHub Pages]
-    
-    %% システム境界
-    subgraph "VtuneList システム"
-        subgraph "楽曲データ管理システム"
-            DM_CSV[CSV取得機能]
-            DM_CONV[データ変換機能]
-            DM_VAL[データバリデーション機能]
-            DM_GEN[検索インデックス生成機能]
-        end
-        
-        subgraph "設定管理システム"
-            CM_CONFIG[設定ファイル管理機能]
-            CM_VAL[設定バリデーション機能]
-        end
-        
-        subgraph "自動サイト更新システム"
-            AU_TRIGGER[更新トリガー機能]
-            AU_BUILD[サイト生成機能]
-            AU_DEPLOY[デプロイ機能]
-            AU_NOTIFY[通知機能]
-        end
-        
-        subgraph "フロントエンド機能システム"
-            FE_SEARCH[検索機能]
-            FE_FILTER[フィルタ機能]
-            FE_SORT[ソート機能]
-            FE_UI[レスポンシブUI機能]
-        end
-    end
-    
-    %% データフロー
-    V --> |楽曲編集| GS
-    V --> |設定変更| GR
-    V --> |更新実行 - GitHub Actions| AU_TRIGGER
-    
-    GS --> |CSV公開| DM_CSV
-    GR --> |config.yml読み込み| CM_CONFIG
-    
-    AU_TRIGGER --> DM_CSV
-    DM_CSV --> DM_CONV
-    DM_CONV --> DM_VAL
-    DM_VAL --> DM_GEN
-    DM_GEN --> |songs.json| AU_BUILD
-    
-    CM_CONFIG --> CM_VAL
-    CM_VAL --> |config.json| AU_BUILD
-    
-    GR --> |HTML/CSS/JSテンプレート| AU_BUILD
-    AU_BUILD --> |静的サイト生成| AU_DEPLOY
-    AU_DEPLOY --> |デプロイ| GP
-    AU_DEPLOY --> AU_NOTIFY
-    AU_NOTIFY --> |通知| V
-    
-    GP --> |静的サイト| L
-    L --> |操作| FE_SEARCH
-    L --> |操作| FE_FILTER  
-    L --> |操作| FE_SORT
-    L --> |閲覧| FE_UI
+  ACTOR_VTUBER(("Vtuber"))
+  SV_GITHUB[("GitHub<BR>Repository")]
+  SV_PAGES[("GitHub<BR>Pages")]
+  SV_GDRIVE[("Google Drive<BR>CSV")]
+
+    subgraph SYS_AUTOUPDATE["自動サイト更新システム"]
+      subgraph SYS_CONFIG["設定管理システム"]
+        FN_LOAD_CONFIG["設定ファイル読込機能"]
+        FN_VALIDATE_CONFIG["設定検証機能"]
+      end
+
+      subgraph SYS_SONGLIST["楽曲データ管理システム"]
+        FN_FETCH_CSV["CSV取得機能"]
+        FN_PROC_SONGS["楽曲データ変換機能"]
+        FN_VALIDATE_SONGS["楽曲データ検証機能"]
+        FN_CREATE_INDEX["検索インデックス生成機能"]
+        FN_INDEX_TO_JSON["JSON変換機能"]
+      end
+
+      FN_DEPLOY["デプロイ機能"]
+      FN_NOTIFY["通知機能"]
+  end
+
+  %% アクター
+  ACTOR_VTUBER --"更新実行<BR>GitHub Action"--> FN_LOAD_CONFIG
+  ACTOR_VTUBER --"楽曲編集"--> SV_GDRIVE
+  ACTOR_VTUBER --"設定変更"--> SV_GITHUB
+
+  %% 外部サービス
+  SV_GITHUB --"設定ファイル<BR>config.yml"--> FN_LOAD_CONFIG
+
+  %% 自動サイト更新システム
+    %% 設定管理システム
+    FN_LOAD_CONFIG --"設定<BR>BuildConfig"--> FN_VALIDATE_CONFIG
+
+    %% 楽曲データ管理システム
+    SV_GDRIVE --"楽曲データ<BR>CSV"--> FN_FETCH_CSV
+    FN_VALIDATE_CONFIG --"CSV URLs(設定から抜粋)<BR>CSVSource[]"--> FN_FETCH_CSV
+    FN_FETCH_CSV --"CSV raw text<BR>string"--> FN_PROC_SONGS
+    FN_PROC_SONGS --"楽曲データ<BR>Song[]"--> FN_VALIDATE_SONGS
+    FN_VALIDATE_SONGS --"楽曲データ<BR>Song[]"--> FN_CREATE_INDEX
+    FN_CREATE_INDEX --"検索インデックス<BR>StaticSeekIndex"--> FN_INDEX_TO_JSON
+
+  FN_INDEX_TO_JSON --"検索インデックス<BR>JSON"--> FN_DEPLOY
+  FN_VALIDATE_CONFIG --"サイト設定(設定から抜粋)<BR>SiteConfig"--> FN_DEPLOY
+  SV_GITHUB --"サイトテンプレート<BR>tsファイル群<BR>アセット"--> FN_DEPLOY
+
+  FN_DEPLOY --"サイト<BR>html/css/js/assets"--> SV_PAGES
+  FN_DEPLOY --"実行ステータス"--> FN_NOTIFY
+
+  FN_NOTIFY --"通知<BR>GitHub Notify"--> ACTOR_VTUBER
+```
+
+### 2.2 楽曲検索システム
+
+```mermaid
+graph TB
+  ACTOR_LISTENER(("リスナー"))
+  
+  subgraph SYS_SEARCH["楽曲検索システム ブラウザ"]
+    FN_DISPLAY["楽曲表示機能"]
+    FN_SEARCH["検索機能"]
+    FN_FILTER["フィルタ機能"]
+    FN_SORT["ソート機能"]
+  end
+
+  SV_PAGES[("GitHub<BR>Pages")]
+
+  ACTOR_LISTENER <--"サイトアクセス"--> SYS_SEARCH
+  SYS_SEARCH <--> SV_PAGES
 ```
 
 ## 3. 機能詳細仕様
 
-### 3.1 楽曲データ管理システム
+### 3.1 自動サイト更新システム
 
-**機能ID**: F001  
-**対応ユーザーストーリー**: US-002
-
-**概要**: Google SpreadsheetからCSV形式でデータを取得し、楽曲情報を管理
-
-**入力仕様**:
-```
-Spreadsheetシート構造:
-| 楽曲名 | アーティスト | ジャンル | メモ |
-| 文字列 | 文字列      | 文字列   | 文字列 |
-
-制約:
-- 楽曲名: 必須、最大200文字
-- アーティスト: 必須、最大100文字  
-- ジャンル: 任意、カンマ区切り、最大50文字
-- メモ: 任意、最大500文字
-```
-
-**システム内機能の連携**:
-1. **CSV取得機能**: HTTP GETリクエストでCSVデータを取得
-2. **データ変換機能**: CSVパースでJavaScriptオブジェクトに変換  
-3. **データバリデーション機能**: データバリデーション実行
-4. **検索インデックス生成機能**: 検索インデックス（songs.json）生成
-
-
-**処理フロー**:
-1. 設定ファイル（config.yml）から各シートのCSV公開URLを取得
-2. CSV取得
-3. データ変換
-4. データバリデーション
-5. 検索インデックス生成
-
-**中間出力(CSVパース後のJSON)仕様**:
-```typescript
-interface Song {
-  title: string;          // 楽曲名
-  artist: string;         // アーティスト名
-  genre: string[];        // ジャンル配列
-  note?: string;          // メモ（任意）
-}
-
-interface SongsData {
-  songs: Song[];
-  updated_at: string;     // ISO 8601形式
-}
-```
-
-**最終出力仕様**
-- クライアントサイド検索ライブラリ(staticseek)が生成する検索インデックス(JSON)
-
-**エラーハンドリング**:
-- CSV取得失敗: GitHub Actions失敗、詳細ログ出力
-- パース失敗: 不正な文字エンコーディング、形式エラー
-- バリデーション失敗: 必須項目欠如、文字数超過
-
----
-
-### 3.2 自動サイト更新システム
-
-**機能ID**: F002  
+**機能ID**: F001
+**対応機能要件**: FR-6
 **対応ユーザーストーリー**: US-003
 
 **概要**: GitHub Actionsによる楽曲データ更新とサイト再生成の自動化
 
 **トリガー**:
 - 手動実行（workflow_dispatch）
-- スケジュール実行（任意、デフォルト無効）
 
-**システム内機能の連携**:
-1. **更新トリガー機能**: GitHub Actions workflow_dispatch受信
-2. **サイト生成機能**: 楽曲データ + 設定データを統合し静的サイト生成
-3. **デプロイ機能**: 生成されたサイトをGitHub Pagesにデプロイ
+**システム内機能・サブシステムの連携**:
+1. **設定管理システム**: GitHubレポジトリにコミットされているconfig.ymlを解析・検証してJS Objectに変換する
+2. **楽曲データ管理システム**: CSV URLsからCSVを取得、楽曲データを抜粋して検索インデックスを作成する
+3. **デプロイ機能**: SSGを用いて、GitHubレポジトリにコミットされてあるテンプレートからサイトを生成、GitHub Pagesにデプロイ
 4. **通知機能**: 処理結果をVtuberに通知
 
 **GitHub Actions ワークフロー仕様**:
@@ -192,7 +138,120 @@ jobs:
 
 ---
 
-### 3.3 フロントエンド機能システム
+### 3.2 設定管理システム
+
+**機能ID**: F002
+**対応機能要件**: FR-7
+**対応ユーザーストーリー**: US-001
+
+**概要**: サイト設定の管理機能
+
+**システム内機能の連携**:
+1. **設定ファイル読込機能**: config.yml読み込み・解析
+2. **設定検証機能**: 設定値の検証・エラーチェック
+
+**設定ファイル仕様** (config.yml):
+```yaml
+# サイト基本設定
+site:
+  title: "楽曲リスト"               # サイトタイトル
+  description: "歌枠用楽曲リスト"    # サイト説明
+  author: "Vtuber名"               # 作成者
+  theme: "light"                   # テーマ (light/dark/auto)
+  language: "ja"                   # 言語
+
+# データソース設定  
+data:
+  sheets:
+    - url: "CSV公開URL"           # CSV公開URL
+    - url: "CSV公開URL2" 
+
+# 機能設定(現状実装なし)
+features:
+
+# UI設定(現状実装なし)
+ui:
+```
+
+**バリデーション**:
+- YAML形式チェック
+- 必須項目検証
+- URL形式検証
+- 文字数制限チェック
+
+---
+
+**データ型仕様**:
+```typescript
+// config.ymlそのままの型（BuildConfig）
+type BuildConfig = {
+  readonly site: SiteConfig;
+  readonly dataSource: readonly DataSourceConfig[];
+};
+
+type SiteConfig = {
+  readonly title: string;        // サイトタイトル
+  readonly description: string;  // サイト説明
+  readonly author: string;       // 著者名
+  readonly baseUrl: string;      // ベースURL
+};
+
+type DataSourceConfig = {
+  readonly csvUrl: string;       // CSV公開URL
+};
+```
+
+### 3.3 楽曲データ管理システム
+
+**機能ID**: F003
+**対応機能要件**: FR-6
+**対応ユーザーストーリー**: US-002
+
+**概要**: Google SpreadsheetからCSV形式でデータを取得し、楽曲情報を管理
+
+**入力仕様**:
+```
+Spreadsheetシート構造:
+| 楽曲名 | アーティスト | ジャンル | メモ |
+| 文字列 | 文字列      | 文字列   | 文字列 |
+
+制約:
+- 楽曲名: 必須、最大200文字
+- アーティスト: 必須、最大100文字  
+- ジャンル: 任意、カンマ区切り、最大50文字
+- メモ: 任意、最大500文字
+```
+
+**システム内機能の連携**:
+1. **CSV取得機能**: HTTP GETリクエストでCSVデータを取得
+2. **楽曲データ変換機能**: CSVパースでJavaScriptオブジェクトに変換  
+3. **楽曲データ検証機能**: データバリデーション実行
+4. **検索インデックス生成機能**: 検索インデックス（StaticSeekIndex）生成
+5. **JSON生成機能**: 検索インデックスをJSON形式に変換
+
+
+**データ型仕様**:
+```typescript
+type Song = {
+  readonly title: string;          // 楽曲名
+  readonly artist: string;         // アーティスト名
+  readonly genre: string[];        // ジャンル配列
+  readonly note?: string;          // メモ（任意）
+}
+```
+
+**最終出力仕様**
+- クライアントサイド検索ライブラリ(staticseek)が生成する検索インデックス(JSON)
+
+**エラーハンドリング**:
+- CSV取得失敗: GitHub Actions失敗、詳細ログ出力
+- パース失敗: 不正な文字エンコーディング、形式エラー
+- バリデーション失敗: 必須項目欠如、文字数超過
+
+---
+
+
+### 3.4 楽曲検索システム
 
 **機能ID**: F003-006  
 **対応ユーザーストーリー**: US-004, US-005, US-006
@@ -233,60 +292,7 @@ jobs:
 
 ---
 
-#### 3.2.2 ジャンルフィルタ機能
-
-**機能ID**: F004  
-**対応ユーザーストーリー**: US-005
-
-**概要**: ジャンル別の楽曲フィルタリング機能
-
-**フィルタ仕様**:
-- staticseekのインターフェイスに準拠
-- ジャンル指定をするクエリ文字列を組み立てて検索実行
-  - keyword AND (from:genre genre1 OR from:genre genre2) 
-
-**UI実装**:
-- チェックボックス形式のジャンル選択
-- 「すべて選択」「すべて解除」ボタン
-- URLパラメータでフィルタ状態保存
-
-**ジャンル管理**:
-- 動的ジャンル一覧生成（サイト生成機能の中で全楽曲から抽出・これはサイト生成機能の仕様）
-- ジャンル表示順序: アルファベット順
-- ジャンル無し楽曲: "未分類" として扱い
-
----
-
-#### 3.2.3 ソート機能
-
-**機能ID**: F005  
-**対応ユーザーストーリー**: 追加要件
-
-**概要**: 楽曲リストのソート機能
-
-**ソート項目**:
-```typescript
-type SortField = 'title' | 'artist' | 'category' | 'updated';
-type SortOrder = 'asc' | 'desc';
-
-interface SortOptions {
-  field: SortField;
-  order: SortOrder;
-  locale: string;             // 'ja-JP'固定
-}
-```
-
-**ソート仕様**:
-- タイトル: 日本語文字列ソート
-- アーティスト: 日本語文字列ソート
-- カテゴリ: 文字列ソート
-- デフォルト: タイトル昇順
-
-**実装**: JavaScript Intl.Collator使用
-
----
-
-#### 3.2.4 レスポンシブUI
+#### 3.4.1 楽曲表示機能
 
 **機能ID**: F006  
 **対応ユーザーストーリー**: US-006
@@ -322,46 +328,60 @@ interface SortOptions {
 - 画像遅延読み込み: 実装
 
 ---
+#### 3.4.2 楽曲検索機能
 
-### 3.4 設定管理システム
+---
 
-**機能ID**: F007  
-**対応ユーザーストーリー**: US-001
+#### 3.4.3 フィルタ機能
 
-**概要**: サイト設定の管理機能
+**機能ID**: F004  
+**対応ユーザーストーリー**: US-005
 
-**システム内機能の連携**:
-1. **設定ファイル管理機能**: config.yml読み込み・解析
-2. **設定バリデーション機能**: 設定値の検証・エラーチェック
+**概要**: ジャンル別の楽曲フィルタリング機能
 
-**設定ファイル仕様** (config.yml):
-```yaml
-# サイト基本設定
-site:
-  title: "楽曲リスト"               # サイトタイトル
-  description: "歌枠用楽曲リスト"    # サイト説明
-  author: "Vtuber名"               # 作成者
-  theme: "light"                   # テーマ (light/dark/auto)
-  language: "ja"                   # 言語
+**フィルタ仕様**:
+- staticseekのインターフェイスに準拠
+- ジャンル指定をするクエリ文字列を組み立てて検索実行
+  - keyword AND (from:genre genre1 OR from:genre genre2) 
 
-# データソース設定  
-data:
-  sheets:
-    - url: "CSV公開URL"           # CSV公開URL
-    - url: "CSV公開URL2" 
+**UI実装**:
+- チェックボックス形式のジャンル選択
+- 「すべて選択」「すべて解除」ボタン
+- URLパラメータでフィルタ状態保存
 
-# 機能設定(現状実装なし)
-features:
+**ジャンル管理**:
+- 動的ジャンル一覧生成（サイト生成機能の中で全楽曲から抽出・これはサイト生成機能の仕様）
+- ジャンル表示順序: アルファベット順
+- ジャンル無し楽曲: "未分類" として扱い
 
-# UI設定(現状実装なし)
-ui:
+---
+
+#### 3.4.4 ソート機能
+
+**機能ID**: F005  
+**対応ユーザーストーリー**: 追加要件
+
+**概要**: 楽曲リストのソート機能
+
+**ソート項目**:
+```typescript
+type SortField = 'title' | 'artist' | 'category' | 'updated';
+type SortOrder = 'asc' | 'desc';
+
+interface SortOptions {
+  field: SortField;
+  order: SortOrder;
+  locale: string;             // 'ja-JP'固定
+}
 ```
 
-**バリデーション**:
-- YAML形式チェック
-- 必須項目検証
-- URL形式検証
-- 文字数制限チェック
+**ソート仕様**:
+- タイトル: 日本語文字列ソート
+- アーティスト: 日本語文字列ソート
+- カテゴリ: 文字列ソート
+- デフォルト: タイトル昇順
+
+**実装**: JavaScript Intl.Collator使用
 
 ---
 
@@ -482,9 +502,29 @@ enum BackendErrorType {
 
 ---
 
-## 4. データフロー詳細
+## 4. 外部サービスの利用
 
-### 4.1 データ更新フロー
+### 4.1 Google Spreadsheet
+
+**機能ID**: F010
+**対応機能要件**: FR-1
+**対応ユーザーストーリー**: US-
+
+**概要**: Vtuberは楽曲をGoogle Spreadsheetで管理できる。Vtuberは楽曲が記載されたシートのCSVを公開し、そのurlをconfig.ymlに書き込むことで、Google Spreadsheetと本システムの連携を行う。
+
+### 4.2 GitHub
+
+**機能ID**: F011
+**対応機能要件**: FR-2, FR-6, FR-7
+**対応ユーザーストーリー**: US-
+
+**概要**: Vtuberは、VtuneListから提供されるテンプレートレポジトリを複製することで、初期のセットアップを始めることができる。レポジトリ内のconfig.ymlをGitHub上で編集することで、全ての設定を完了することができる。GitHub Pageの有効化を行い、デプロイが行えるようにする。GitHub Actionから、自動サイト更新システムを起動し、その結果をGitHub通知として受け取ることができる。
+
+---
+
+## 5. データフロー詳細
+
+### 5.1 データ更新フロー
 
 ```mermaid
 sequenceDiagram
@@ -508,7 +548,7 @@ sequenceDiagram
     GP-->>L: 更新されたサイト表示
 ```
 
-### 4.2 検索処理フロー
+### 5.2 検索処理フロー
 
 ```mermaid
 sequenceDiagram
@@ -528,24 +568,24 @@ sequenceDiagram
     UI-->>U: 検索結果表示
 ```
 
-## 5. セキュリティ仕様
+## 6. セキュリティ仕様
 
-### 5.1 データ保護
+### 6.1 データ保護
 
 - **個人情報**: 楽曲データに個人情報を含まない設計
 - **認証**: 管理画面なし（GitHub認証のみ）
 - **HTTPS**: GitHub Pages強制HTTPS
 - **XSS対策**: ユーザー入力のエスケープ処理
 
-### 5.2 アクセス制御
+### 6.2 アクセス制御
 
 - **読み取り**: パブリックアクセス（制限なし）
 - **書き込み**: GitHubリポジトリオーナーのみ
 - **CSV URL**: 公開URL使用（アクセス制限なし）
 
-## 6. パフォーマンス要件
+## 7. パフォーマンス要件
 
-### 6.1 応答時間
+### 7.1 応答時間
 
 | 操作 | 目標時間 | 最大時間 |
 |------|---------|---------|
@@ -554,7 +594,7 @@ sequenceDiagram
 | フィルタ適用 | 0.1秒 | 0.2秒 |
 | ソート実行 | 0.1秒 | 0.2秒 |
 
-### 6.2 データ容量
+### 7.2 データ容量
 
 | 項目 | 想定値 | 上限値 |
 |------|--------|--------|
@@ -563,15 +603,15 @@ sequenceDiagram
 | フォント | 100KB | 200KB |
 | 画像 | 50KB | 100KB |
 
-### 6.3 同時接続
+### 7.3 同時接続
 
 - **想定同時接続数**: 100人
 - **ピーク接続数**: 500人
 - **対応**: GitHub Pages CDNによる負荷分散
 
-## 7. ブラウザ対応
+## 8. ブラウザ対応
 
-### 7.1 対応ブラウザ
+### 8.1 対応ブラウザ
 
 | ブラウザ | バージョン | 対応レベル |
 |----------|------------|------------|
@@ -582,26 +622,26 @@ sequenceDiagram
 - HTML/CSS設計を簡略化し、必要な機能に応じてバージョンを決定
 - 検証可能な環境に限定してしっかりとした品質を確保
 
-### 7.2 フォールバック
+### 8.2 フォールバック
 
 - **JavaScript無効**: 基本表示のみ（検索・フィルタ無効）
 
-## 8. テスト仕様 [暫定]
+## 9. テスト仕様 [暫定]
 
-### 8.1 単体テスト
+### 9.1 単体テスト
 
 - **検索機能**: クエリ処理、正規化、あいまい検索
 - **フィルタ機能**: 条件処理、複数選択
 - **ソート機能**: 文字列ソート、日本語対応
 - **データ変換**: CSV→JSON変換、バリデーション
 
-### 8.2 統合テスト
+### 9.2 統合テスト
 
 - **データフロー**: CSV取得→変換→表示
 - **GitHub Actions**: ワークフロー実行→デプロイ
 - **エラー処理**: エラー発生→通知→回復
 
-### 8.3 E2Eテスト（Playwright）
+### 9.3 E2Eテスト（Playwright）
 
 ```typescript
 test('楽曲検索機能', async ({ page }) => {
@@ -617,11 +657,11 @@ test('楽曲検索機能', async ({ page }) => {
 });
 ```
 
-## 9. 運用・監視 [暫定]
+## 10. 運用・監視 [暫定]
 
 **注意**: GitHub Pages（静的ホスティング）では従来的なサーバーログアクセスは不可能。監視手法は限定的。
 
-### 9.1 ログ出力
+### 10.1 ログ出力
 
 **GitHub Actions ログ**:
 - データ取得時間
@@ -634,11 +674,10 @@ test('楽曲検索機能', async ({ page }) => {
 - エラー発生状況（ブラウザConsole）
 - ユーザー操作統計（匿名、localStorage）
 
-### 9.2 監視項目（制約あり）
+### 10.2 監視項目（制約あり）
 
 - **サイト可用性**: 外部監視サービス利用（UptimeRobot等）
 - **データ更新**: GitHub Actions実行履歴確認
 - **パフォーマンス**: Google Search Console、手動測定
 - **エラー率**: 外部エラー収集サービス利用（Sentry等、要検討）
 
-これらの機能仕様に基づいて、次のフェーズでアーキテクチャ設計とUI/UX設計を進めていきます。
