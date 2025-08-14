@@ -19,73 +19,60 @@
 #### 作業内容
 - [x] プロジェクト概要の作成（CONCEPT.md）
 - [x] 要件定義（REQUIREMENTS.md）
-- [x] 開発フロー設計（DEVFLOW.md）
 - [x] ユーザーストーリー作成
-- [x] 優先度付け・スコープ決定
 
 #### Deliverable
-- CONCEPT.md（完了）
-- REQUIREMENTS.md（完了）
-- DEVFLOW.md（完了）
-- USER_STORIES.md（完了）
-- PROJECT_SCOPE.md（完了）
+- CONCEPT.md
+- REQUIREMENTS.md
+- USER_STORIES.md
 
 #### 完了基準
 - 全ての要件が文書化され、ステークホルダーが承認
-- 開発スコープと優先度が決定
 
 ### 3.2 設計フェーズ
 
-**目的**: システムアーキテクチャとUI/UXの設計
+**目的**: 機能仕様・実装仕様とUI/UXの設計
 
 #### 作業内容
-- [ ] 機能仕様書作成
-- [ ] システムアーキテクチャ設計
-- [ ] データベース設計（JSON構造）
+- [x] 機能仕様書作成
+- [ ] 技術スタックの確定
+  - 静的サイト生成ツール選定
+  - CSS フレームワーク選定
+  - JavaScript ライブラリ選定
 - [ ] UI/UXワイヤーフレーム作成
-- [ ] コンポーネント設計
-- [ ] API設計（Spreadsheet CSV → JSON変換）
-- [ ] セキュリティ設計
-- [ ] パフォーマンス設計
+- [x] 実装仕様書作成
+  - 静的サイト生成
+  - フロントエンド
 
 #### Deliverable
 - FUNCTIONAL_SPEC.md
-- ARCHITECTURE.md
-- DATABASE_DESIGN.md
-- UI_WIREFRAMES/（フォルダ）
-- COMPONENT_SPEC.md
-- API_SPEC.md
-- SECURITY_DESIGN.md
-- PERFORMANCE_DESIGN.md
+- TECH_STACK.md
+- BUILD_SPEC.md (静的サイト生成)
+- FRONTEND_SPEC.md
+- UI_WIREFRAMES.md (mermaid)
 
 #### 完了基準
-- 全てのコンポーネントと相互作用が設計文書に記載
+- 全ての実装するコンポーネントと相互作用が設計文書に記載
 - UIワイヤーフレームが完成し、ユーザビリティが確認済み
 
-### 3.3 技術選定・環境構築フェーズ
+### 3.3 環境構築フェーズ
 
 **目的**: 開発環境とツールチェーンの準備
 
 #### 作業内容
-- [ ] フロントエンド技術スタックの確定
-  - 静的サイト生成ツール選定
-  - CSS フレームワーク選定
-  - JavaScript ライブラリ選定
 - [ ] 開発環境構築
-  - Node.js/Bun 環境セットアップ
+  - Node.js/Deno/Bun 環境セットアップ
   - パッケージマネージャー設定
   - 開発ツール設定（リント、フォーマッタ等）
 - [ ] CI/CD パイプライン設計
   - GitHub Actions ワークフロー設計
   - テスト自動化設定
   - デプロイメント設定
-- [ ] テンプレートリポジトリ構造設計
 
 #### Deliverable
-- TECH_STACK.md
+- DEVENV.md
 - 開発環境設定ファイル（package.json, .gitignore等）
 - GitHub Actions ワークフロー（.github/workflows/）
-- リポジトリテンプレート構造
 
 #### 完了基準
 - 開発環境がセットアップ済み
@@ -100,7 +87,6 @@
 ##### 3.4.1 フロントエンド実装
 - [ ] 基本HTMLテンプレート作成
 - [ ] CSS スタイリング実装
-- [ ] レスポンシブデザイン実装
 - [ ] JavaScript 機能実装
   - 検索機能（staticseek ライブラリ使用）
   - フィルタリング機能
@@ -120,8 +106,8 @@
 - [ ] エラー通知機能
 
 #### Deliverable
-- src/ ディレクトリ内の全ソースコード
-- public/ ディレクトリ内の静的リソース
+- src/ データ処理・静的サイト生成の全ソースコード
+- site/ フロントエンドのhtml/css/js、その他リソース全て
 - .github/workflows/ 内のワークフロー
 
 #### 完了基準
