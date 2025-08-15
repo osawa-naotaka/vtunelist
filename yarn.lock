@@ -5,9 +5,9 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
-"@anthropic-ai/claude-code@npm:^1.0.80":
-  version: 1.0.80
-  resolution: "@anthropic-ai/claude-code@npm:1.0.80"
+"@anthropic-ai/claude-code@npm:^1.0.81":
+  version: 1.0.81
+  resolution: "@anthropic-ai/claude-code@npm:1.0.81"
   dependencies:
     "@img/sharp-darwin-arm64": "npm:^0.33.5"
     "@img/sharp-darwin-x64": "npm:^0.33.5"
@@ -30,7 +30,7 @@ __metadata:
       optional: true
   bin:
     claude: cli.js
-  checksum: 10c0/8ef72ad6bb5b4691b4fb717fa9134942755c2ec4aec082678453d8cc8c2885717195c2108dba421bd6581477db281e6b9d16222381558e5f3e812dc559ed578a
+  checksum: 10c0/6e1aded766e8158a8c27fad7c82924f510ea3dda53ea5e6681c19372288d7ff52acc113250c9d39d3775d0ecad6f3981e56c80f4ccf134f5f4a4ab2944fc6cee
   languageName: node
   linkType: hard
 
@@ -3814,7 +3814,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "vtunelist@workspace:."
   dependencies:
-    "@anthropic-ai/claude-code": "npm:^1.0.80"
+    "@anthropic-ai/claude-code": "npm:^1.0.81"
     "@biomejs/biome": "npm:^2.1.4"
     tsx: "npm:^4.20.3"
     typescript: "npm:~5.8.3"
