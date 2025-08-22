@@ -1,0 +1,6 @@
+[submodule "submodule/staticseek-docweb"]
+	path = submodule/staticseek-docweb
+	url = https://github.com/osawa-naotaka/staticseek-docweb.git
+[submodule "submodule/zephblaze"]
+	path = submodule/zephblaze
+	url = https://github.com/osawa-naotaka/zephblaze.git

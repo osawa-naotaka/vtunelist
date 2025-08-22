@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .frame { stroke: #333; stroke-width: 2; fill: none; }
+      .content-area { fill: #f8f9fa; stroke: #dee2e6; stroke-width: 1; }
+      .primary-text { font-family: Arial, sans-serif; font-size: 14px; fill: #212529; font-weight: bold; }
+      .secondary-text { font-family: Arial, sans-serif; font-size: 12px; fill: #6c757d; }
+      .input-field { fill: white; stroke: #ced4da; stroke-width: 1; }
+      .button { fill: #007bff; stroke: none; }
+      .button-text { font-family: Arial, sans-serif; font-size: 12px; fill: white; }
+      .checkbox { fill: white; stroke: #6c757d; stroke-width: 1; }
+      .song-item { fill: white; stroke: #dee2e6; stroke-width: 1; }
+      .highlight { fill: #e7f3ff; }
+      .grid-lines { stroke: #dee2e6; stroke-width: 0.5; stroke-dasharray: 2,2; }
+    </style>
+  </defs>
+  
+  <!-- Browser Frame -->
+  <rect x="0" y="0" width="1200" height="800" class="frame"/>
+  <rect x="0" y="0" width="1200" height="40" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1"/>
+  <text x="20" y="25" class="secondary-text">VtuneList - 楽曲リスト</text>
+  
+  <!-- Main Content Area (768px width, centered) -->
+  <g transform="translate(216,60)">
+    <!-- Content Container -->
+    <rect x="0" y="0" width="768" height="720" class="content-area"/>
+    
+    <!-- Header Section -->
+    <g transform="translate(40,40)">
+      <!-- Site Title -->
+      <text x="0" y="0" class="primary-text" font-size="28">楽曲リスト</text>
+      <text x="0" y="25" class="secondary-text">歌枠用楽曲リスト - 検索してリクエストしたい楽曲を見つけよう</text>
+    </g>
+    
+    <!-- Search Section -->
+    <g transform="translate(40,120)">
+      <!-- Search Box -->
+      <rect x="0" y="0" width="500" height="40" class="input-field"/>
+      <text x="15" y="25" class="secondary-text">楽曲名やアーティスト名を検索...</text>
+      <!-- Clear Button -->
+      <circle cx="470" cy="20" r="8" fill="#6c757d"/>
+      <text x="466" y="25" fill="white" font-size="12">×</text>
+      
+      <!-- Search Results Count -->
+      <text x="520" y="25" class="secondary-text">124件の楽曲が見つかりました</text>
+    </g>
+    
+    <!-- Filter and Sort Section -->
+    <g transform="translate(40,180)">
+      <!-- Genre Filter -->
+      <text x="0" y="0" class="primary-text">ジャンル</text>
+      <g transform="translate(0,20)">
+        <rect x="0" y="0" width="15" height="15" class="checkbox"/>
+        <text x="25" y="12" class="secondary-text">アニソン (45)</text>
+        <rect x="100" y="0" width="15" height="15" class="checkbox"/>
+        <rect x="100" y="0" width="15" height="15" fill="#007bff"/>
+        <text x="125" y="12" class="secondary-text">ボカロ (32)</text>
+        <rect x="200" y="0" width="15" height="15" class="checkbox"/>
+        <text x="225" y="12" class="secondary-text">J-POP (28)</text>
+        <rect x="320" y="0" width="15" height="15" class="checkbox"/>
+        <text x="345" y="12" class="secondary-text">未分類 (19)</text>
+      </g>
+      
+      <!-- Filter Buttons -->
+      <g transform="translate(0,50)">
+        <rect x="0" y="0" width="80" height="30" class="button"/>
+        <text x="15" y="20" class="button-text">すべて選択</text>
+        <rect x="90" y="0" width="80" height="30" fill="white" stroke="#6c757d" stroke-width="1"/>
+        <text x="105" y="20" class="secondary-text">すべて解除</text>
+      </g>
+      
+      <!-- Sort Options -->
+      <g transform="translate(450,0)">
+        <text x="0" y="0" class="primary-text">ソート</text>
+        <rect x="0" y="20" width="120" height="30" class="input-field"/>
+        <text x="10" y="40" class="secondary-text">楽曲名 (昇順) ▼</text>
+      </g>
+    </g>
+    
+    <!-- Song List Header -->
+    <g transform="translate(40,320)">
+      <rect x="0" y="0" width="688" height="30" fill="#e9ecef"/>
+      <text x="15" y="20" class="primary-text">楽曲名</text>
+      <text x="250" y="20" class="primary-text">アーティスト</text>
+      <text x="400" y="20" class="primary-text">ジャンル</text>
+      <text x="520" y="20" class="primary-text">メモ</text>
+    </g>
+    
+    <!-- Song List Items -->
+    <g transform="translate(40,350)">
+      <!-- Song Item 1 (Highlighted) -->
+      <rect x="0" y="0" width="688" height="35" class="song-item highlight"/>
+      <text x="15" y="22" class="primary-text">残酷な天使のテーゼ</text>
+      <text x="250" y="22" class="secondary-text">高橋洋子</text>
+      <rect x="400" y="8" width="40" height="18" fill="#007bff" rx="9"/>
+      <text x="407" y="20" fill="white" font-size="10">アニソン</text>
+      <text x="520" y="22" class="secondary-text">定番曲</text>
+      
+      <!-- Song Item 2 -->
+      <rect x="0" y="35" width="688" height="35" class="song-item"/>
+      <text x="15" y="57" class="primary-text">シャルル</text>
+      <text x="250" y="57" class="secondary-text">バルーン</text>
+      <rect x="400" y="43" width="35" height="18" fill="#28a745" rx="9"/>
+      <text x="407" y="55" fill="white" font-size="10">ボカロ</text>
+      <text x="520" y="57" class="secondary-text">人気曲</text>
+      
+      <!-- Song Item 3 -->
+      <rect x="0" y="70" width="688" height="35" class="song-item"/>
+      <text x="15" y="92" class="primary-text">紅蓮華</text>
+      <text x="250" y="92" class="secondary-text">LiSA</text>
+      <rect x="400" y="78" width="40" height="18" fill="#007bff" rx="9"/>
+      <text x="407" y="90" fill="white" font-size="10">アニソン</text>
+      <text x="520" y="92" class="secondary-text">鬼滅OP</text>
+      
+      <!-- Song Item 4 -->
+      <rect x="0" y="105" width="688" height="35" class="song-item"/>
+      <text x="15" y="127" class="primary-text">夜に駆ける</text>
+      <text x="250" y="127" class="secondary-text">YOASOBI</text>
+      <rect x="400" y="113" width="35" height="18" fill="#ffc107" rx="9"/>
+      <text x="410" y="125" fill="white" font-size="10">J-POP</text>
+      <text x="520" y="127" class="secondary-text">バズ曲</text>
+      
+      <!-- Song Item 5 -->
+      <rect x="0" y="140" width="688" height="35" class="song-item"/>
+      <text x="15" y="162" class="primary-text">猫</text>
+      <text x="250" y="162" class="secondary-text">DISH//</text>
+      <rect x="400" y="148" width="35" height="18" fill="#ffc107" rx="9"/>
+      <text x="410" y="160" fill="white" font-size="10">J-POP</text>
+      <text x="520" y="162" class="secondary-text"></text>
+      
+      <!-- More items indicator -->
+      <text x="15" y="200" class="secondary-text">... 他119件</text>
+    </g>
+    
+    <!-- Grid lines for layout reference -->
+    <line x1="40" y1="0" x2="40" y2="720" class="grid-lines"/>
+    <line x1="728" y1="0" x2="728" y2="720" class="grid-lines"/>
+    <line x1="0" y1="100" x2="768" y2="100" class="grid-lines"/>
+    <line x1="0" y1="300" x2="768" y2="300" class="grid-lines"/>
+  </g>
+  
+  <!-- Annotations -->
+  <g transform="translate(50,750)">
+    <text class="secondary-text">デスクトップ版メインビュー (1200×800) | コンテンツ幅: 768px | 検索結果ハイライト表示</text>
+  </g>
+</svg>

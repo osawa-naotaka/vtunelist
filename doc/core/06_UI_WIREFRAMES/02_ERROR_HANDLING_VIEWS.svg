@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .frame { stroke: #333; stroke-width: 2; fill: none; }
+      .content-area { fill: #f8f9fa; stroke: #dee2e6; stroke-width: 1; }
+      .primary-text { font-family: Arial, sans-serif; font-size: 16px; fill: #212529; font-weight: bold; }
+      .secondary-text { font-family: Arial, sans-serif; font-size: 14px; fill: #6c757d; }
+      .small-text { font-family: Arial, sans-serif; font-size: 12px; fill: #6c757d; }
+      .error-text { font-family: Arial, sans-serif; font-size: 16px; fill: #dc3545; font-weight: bold; }
+      .warning-text { font-family: Arial, sans-serif; font-size: 14px; fill: #856404; }
+      .button { fill: #007bff; stroke: none; rx: 4; }
+      .button-text { font-family: Arial, sans-serif; font-size: 14px; fill: white; }
+      .error-page { fill: #fff5f5; stroke: #fed7d7; stroke-width: 2; rx: 8; }
+      .warning-banner { fill: #fffbf0; stroke: #ffd89b; stroke-width: 2; rx: 4; }
+      .toast { fill: white; stroke: #dee2e6; stroke-width: 1; rx: 6; }
+    </style>
+  </defs>
+  
+  <!-- Main Frame -->
+  <rect x="0" y="0" width="1200" height="900" class="frame"/>
+  
+  <!-- Title -->
+  <text x="20" y="30" class="primary-text" font-size="20">エラーハンドリング画面 - ワイヤーフレーム</text>
+  
+  <!-- Critical Error Page -->
+  <g transform="translate(50,60)">
+    <text x="0" y="0" class="primary-text">1. Critical Error Page</text>
+    <text x="0" y="20" class="small-text">NETWORK_ERROR | DATA_PARSE_ERROR | DOM_ERROR</text>
+    
+    <rect x="0" y="40" width="500" height="280" class="error-page"/>
+    
+    <!-- Error Icon -->
+    <circle cx="250" cy="120" r="30" fill="#dc3545"/>
+    <text x="240" y="130" fill="white" font-size="24">⚠</text>
+    
+    <!-- Error Message -->
+    <text x="250" y="180" class="error-text" text-anchor="middle">楽曲データを読み込めません</text>
+    <text x="250" y="205" class="secondary-text" text-anchor="middle">ネットワーク接続を確認してください</text>
+    
+    <!-- Action Buttons -->
+    <rect x="150" y="230" width="100" height="35" class="button"/>
+    <text x="180" y="253" class="button-text">再読み込み</text>
+    
+    <rect x="270" y="230" width="100" height="35" fill="white" stroke="#6c757d" stroke-width="1" rx="4"/>
+    <text x="290" y="253" class="secondary-text">お問い合わせ</text>
+  </g>
+  
+  <!-- Warning Banner -->
+  <g transform="translate(600,60)">
+    <text x="0" y="0" class="primary-text">2. Warning Banner</text>
+    <text x="0" y="20" class="small-text">SEARCH_ERROR</text>
+    
+    <rect x="0" y="40" width="500" height="60" class="warning-banner"/>
+    
+    <!-- Warning Icon -->
+    <circle cx="30" cy="70" r="15" fill="#856404"/>
+    <text x="24" y="77" fill="white" font-size="16">!</text>
+    
+    <!-- Warning Message -->
+    <text x="60" y="68" class="warning-text">検索機能が利用できません</text>
+    <text x="60" y="85" class="small-text">全件表示に切り替えました</text>
+    
+    <!-- Close Button -->
+    <circle cx="470" cy="70" r="12" fill="#6c757d"/>
+    <text x="466" y="75" fill="white" font-size="14">×</text>
+  </g>
+  
+  <!-- Toast Notifications -->
+  <g transform="translate(50,420)">
+    <text x="0" y="0" class="primary-text">3. Toast Notifications</text>
+    
+    <!-- Runtime Error Toast -->
+    <g transform="translate(0,30)">
+      <text x="0" y="0" class="small-text">RUNTIME_ERROR</text>
+      <rect x="0" y="10" width="300" height="60" class="toast"/>
+      
+      <circle cx="25" cy="40" r="12" fill="#ffc107"/>
+      <text x="21" y="45" fill="white" font-size="12">!</text>
+      
+      <text x="50" y="35" class="warning-text">予期しないエラーが発生しました</text>
+      <text x="50" y="52" class="small-text">操作を続行できます</text>
+      
+      <text x="270" y="40" class="secondary-text">×</text>
+    </g>
+    
+    <!-- Storage Error Toast -->
+    <g transform="translate(320,30)">
+      <text x="0" y="0" class="small-text">STORAGE_ERROR</text>
+      <rect x="0" y="10" width="300" height="60" class="toast"/>
+      
+      <circle cx="25" cy="40" r="12" fill="#17a2b8"/>
+      <text x="21" y="45" fill="white" font-size="12">i</text>
+      
+      <text x="50" y="35" class="secondary-text">設定の保存ができません</text>
+      <text x="50" y="52" class="small-text">一時的にメモリで動作します</text>
+      
+      <text x="270" y="40" class="secondary-text">×</text>
+    </g>
+  </g>
+  
+  <!-- Empty States -->
+  <g transform="translate(50,570)">
+    <text x="0" y="0" class="primary-text">4. Empty States</text>
+    
+    <!-- No Search Results -->
+    <g transform="translate(0,30)">
+      <text x="0" y="0" class="small-text">検索結果なし</text>
+      <rect x="0" y="10" width="400" height="120" class="content-area"/>
+      
+      <circle cx="200" cy="60" r="25" fill="#6c757d"/>
+      <text x="190" y="70" fill="white" font-size="24">🔍</text>
+      
+      <text x="200" y="100" class="secondary-text" text-anchor="middle">検索条件に一致する楽曲が見つかりません</text>
+      <text x="200" y="120" class="small-text" text-anchor="middle">別のキーワードで検索してみてください</text>
+    </g>
+    
+    <!-- No Data Available -->
+    <g transform="translate(450,30)">
+      <text x="0" y="0" class="small-text">データなし</text>
+      <rect x="0" y="10" width="400" height="120" class="content-area"/>
+      
+      <circle cx="200" cy="60" r="25" fill="#6c757d"/>
+      <text x="185" y="70" fill="white" font-size="24">🎵</text>
+      
+      <text x="200" y="100" class="secondary-text" text-anchor="middle">楽曲データがありません</text>
+      <text x="200" y="120" class="small-text" text-anchor="middle">管理者にデータ追加をお問い合わせください</text>
+    </g>
+  </g>
+  
+  <!-- Loading States -->
+  <g transform="translate(50,750)">
+    <text x="0" y="0" class="primary-text">5. Loading States</text>
+    
+    <!-- Data Loading -->
+    <g transform="translate(0,30)">
+      <rect x="0" y="0" width="250" height="60" class="content-area"/>
+      <circle cx="125" cy="30" r="15" fill="none" stroke="#007bff" stroke-width="2"/>
+      <text x="75" y="55" class="secondary-text">読み込み中...</text>
+    </g>
+    
+    <!-- Search Loading -->
+    <g transform="translate(300,30)">
+      <rect x="0" y="0" width="250" height="60" class="content-area"/>
+      <rect x="50" y="25" width="150" height="6" fill="#e9ecef" rx="3"/>
+      <rect x="50" y="25" width="90" height="6" fill="#007bff" rx="3"/>
+      <text x="75" y="50" class="secondary-text">検索中... 60%</text>
+    </g>
+  </g>
+  
+  <!-- Annotations -->
+  <g transform="translate(50,870)">
+    <text class="small-text">エラーハンドリング画面仕様 | Critical: エラーページ | Warning: バナー | Info: トースト | 機能仕様書 3.5準拠</text>
+  </g>
+</svg>
