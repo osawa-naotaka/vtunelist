@@ -457,8 +457,7 @@ enum ErrorType {
   DATA_PARSE_ERROR = 'data_parse_error',     // マルフォームなsongs.json
   SEARCH_ERROR = 'search_error',             // staticseek実行エラー
   RUNTIME_ERROR = 'runtime_error',           // JavaScript実行時例外
-  STORAGE_ERROR = 'storage_error',           // localStorage操作エラー
-  DOM_ERROR = 'dom_error'                    // DOM初期化失敗
+  DOM_ERROR = 'dom_error'                    // DOM更新失敗
 }
 
 interface VtuneListError {
@@ -479,7 +478,6 @@ interface VtuneListError {
 | DATA_PARSE_ERROR | critical | エラーページ | 「楽曲データが破損しています」 | 管理者への連絡案内 |
 | SEARCH_ERROR | warning | 警告バナー | 「検索機能が利用できません」 | 全件表示への切り替え + 機能無効化 |
 | RUNTIME_ERROR | warning | トースト通知 | 「予期しないエラーが発生しました」 | 詳細をConsoleに出力 + 継続可能 |
-| STORAGE_ERROR | info | トースト通知 | 「設定の保存ができません」 | 機能継続（メモリ上で動作） |
 | DOM_ERROR | critical | エラーページ | 「サイトの初期化に失敗しました」 | ブラウザ更新案内 |
 
 **ログ管理**:
@@ -515,6 +513,7 @@ enum BackendErrorType {
 |------------|-------|---------|------------------|--------------|
 | CSV_NETWORK_ERROR | critical | GitHub通知 | 「楽曲データの取得に失敗しました」 | CSV公開URL確認案内 + 再実行 |
 | CSV_FORMAT_ERROR | critical | GitHub通知 | 「楽曲データの形式が正しくありません」 | Spreadsheet形式確認案内 |
+| CONFIG_READ_ERROR | critical | GitHub通知 | 「設定ファイルの読み込みに失敗しました」 | config.yml作成案内 |
 | CONFIG_FORMAT_ERROR | critical | GitHub通知 | 「設定ファイルの形式が正しくありません」 | config.yml修正案内 |
 | SSG_FAILURE | critical | GitHub通知 | 「サイト生成に失敗しました」 | ログ確認案内 + 再実行 |
 | DEPENDENCY_ERROR | warning | GitHub通知 | 「依存関係のインストールに失敗しました」 | package.json確認案内 |
@@ -615,11 +614,11 @@ sequenceDiagram
     participant S as Search Engine
     participant D as Data Store
 
+    S->>D: 検索インデックス取得<BR>初回のみ
+    D-->>S: songs.json
     U->>UI: 検索文字列・ジャンル入力
     UI->>UI: クエリ構築
     UI->>S: 検索実行
-    S->>D: 検索インデックス取得<BR>初回のみ
-    D-->>S: songs.json
     S-->>UI: 検索結果
     UI->>UI: 検索結果ソート
     UI->>UI: DOM更新
@@ -627,6 +626,36 @@ sequenceDiagram
 ```
 
 ## 6. 非同期設計
+
+### 6.1 自動サイト更新システム
+
+1. **データ取得処理**
+   - 楽曲データ（CSV）- fetch API
+     - 1回のサイト更新につき1回だけ実行される
+     - Promiseでasync/awaitすれば実質同期処理なので対処なしでOK
+
+### 6.2 楽曲検索システム
+
+1. **データ取得処理** (初期化時)
+   - 検索インデックス(songs.json)の取得 - fetch API
+     - fetch中はSuspenceの表示をする（loading表示、検索文字列入力欄、ジャンル選択、ソート欄disableで入力無効化）
+       - 入力無効化だけでよいか？直接関数を呼ばれたら更新されてしまう
+
+2. **ユーザー操作処理** (実行時)
+   - 検索実行 - staticseek search API
+     - APIがPromiseを返す
+     - 非同期処理中のUIからのデータフェッチを禁止する
+       - そうすることで並列処理で順番が前後しても検索結果は一意になる
+       - 検索文字列: search関数に引数として渡すため、非同期処理内でUIの参照なし
+       - ジャンル: 同上
+       - ソート順: searchをspawnするPromiseを生成する。そのPromiseにUIに存在するソート順を渡しておく。このPromiseでは、結果のソートまでを担当させる
+     - 検索結果が検索実行順に反映されるとは限らないため、検索結果と入力欄が一致しない可能性がある
+       - searchが返すPromiseをQueueに積み、順番にDOMに反映させることで、検索結果と入力欄を一致させる
+   - トースト表示管理(エラー時)
+     - TBD(多分DOM更新箇所が独立している&CSSアニメーションで実行するので対処なしでOK)
+   - アニメーション処理（存在すれば）
+     - TBD(多分CSSアニメーションで実行するので対処なしでOK)
+
 
 ## 7. セキュリティ仕様
 
