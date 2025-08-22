@@ -69,16 +69,37 @@ graph TB
   ACTOR_LISTENER(("リスナー"))
   
   subgraph SYS_SEARCH["楽曲検索システム ブラウザ"]
-    FN_DISPLAY["楽曲表示機能"]
-    FN_SEARCH["検索機能"]
-    FN_FILTER["フィルタ機能"]
-    FN_SORT["ソート機能"]
+    FN_EVENT_HANDLER["イベントハンドラ"]
+    FN_INPUT_TYPE{"入力種別"}
+    FN_QUERY_BUILDER["クエリビルダ"]
+    FN_SEARCH["検索(staticseek)"]
+    FN_SORT_RESULT["検索結果ソート"]
+    FN_BUILD_DOM["DOMビルド"]
+    FN_UPDATE_DOM["DOM更新"]
+
+    FN_EVENT_HANDLER --> FN_INPUT_TYPE
+    FN_INPUT_TYPE --"ユーザー操作"--> FN_QUERY_BUILDER
+    FN_INPUT_TYPE --"フィルタ選択"--> FN_QUERY_BUILDER
+    FN_QUERY_BUILDER --> FN_SEARCH
+    FN_SEARCH --> FN_SORT_RESULT
+    FN_INPUT_TYPE --"ソート種別"--> FN_SORT_RESULT
+    FN_SORT_RESULT --> FN_BUILD_DOM
+    FN_BUILD_DOM --> FN_UPDATE_DOM
+
+
+    FN_ERROR_HANDLER["エラーハンドラ"]
+    FN_ERROR_DISPLAY["エラー表示"]
+
+    FN_ERROR_HANDLER --> FN_ERROR_DISPLAY
+
   end
 
   SV_PAGES[("GitHub<BR>Pages")]
 
-  ACTOR_LISTENER <--"サイトアクセス"--> SYS_SEARCH
+  ACTOR_LISTENER <--"サイトアクセス<BR>ユーザー操作"--> SYS_SEARCH
   SYS_SEARCH <--> SV_PAGES
+  SV_PAGES --"検索インデックス"--> FN_SEARCH
+
 ```
 
 ## 3. 機能詳細仕様
@@ -176,6 +197,7 @@ ui:
 **バリデーション**:
 - YAML形式チェック
 - 必須項目検証
+- 無効項目検証・ワーニング生成
 - URL形式検証
 - 文字数制限チェック
 
@@ -207,7 +229,7 @@ type DataSourceConfig = {
 **対応機能要件**: FR-6
 **対応ユーザーストーリー**: US-002
 
-**概要**: Google SpreadsheetからCSV形式でデータを取得し、楽曲情報を管理
+**概要**: Google SpreadsheetからCSV形式でデータを取得し、検索用インデックスを生成
 
 **入力仕様**:
 ```
@@ -593,35 +615,37 @@ sequenceDiagram
     participant S as Search Engine
     participant D as Data Store
 
-    U->>UI: 検索クエリ入力
+    U->>UI: 検索文字列・ジャンル入力
+    UI->>UI: クエリ構築
     UI->>S: 検索実行
-    S->>D: 楽曲データ取得
-    D-->>S: songs.json データ
-    S->>S: 文字列正規化
-    S->>S: 部分一致 + あいまい検索
+    S->>D: 検索インデックス取得<BR>初回のみ
+    D-->>S: songs.json
     S-->>UI: 検索結果
-    UI->>UI: 結果表示更新
+    UI->>UI: 検索結果ソート
+    UI->>UI: DOM更新
     UI-->>U: 検索結果表示
 ```
 
-## 6. セキュリティ仕様
+## 6. 非同期設計
 
-### 6.1 データ保護
+## 7. セキュリティ仕様
+
+### 7.1 データ保護
 
 - **個人情報**: 楽曲データに個人情報を含まない設計
 - **認証**: 管理画面なし（GitHub認証のみ）
 - **HTTPS**: GitHub Pages強制HTTPS
 - **XSS対策**: ユーザー入力のエスケープ処理
 
-### 6.2 アクセス制御
+### 7.2 アクセス制御
 
 - **読み取り**: パブリックアクセス（制限なし）
 - **書き込み**: GitHubリポジトリオーナーのみ
 - **CSV URL**: 公開URL使用（アクセス制限なし）
 
-## 7. パフォーマンス要件
+## 8. パフォーマンス要件
 
-### 7.1 応答時間
+### 8.1 応答時間
 
 | 操作 | 目標時間 | 最大時間 |
 |------|---------|---------|
@@ -630,7 +654,7 @@ sequenceDiagram
 | フィルタ適用 | 0.1秒 | 0.2秒 |
 | ソート実行 | 0.1秒 | 0.2秒 |
 
-### 7.2 データ容量
+### 8.2 データ容量
 
 | 項目 | 想定値 | 上限値 |
 |------|--------|--------|
@@ -639,15 +663,15 @@ sequenceDiagram
 | フォント | 100KB | 200KB |
 | 画像 | 50KB | 100KB |
 
-### 7.3 同時接続
+### 8.3 同時接続
 
 - **想定同時接続数**: 100人
 - **ピーク接続数**: 500人
 - **対応**: GitHub Pages CDNによる負荷分散
 
-## 8. ブラウザ対応
+## 9. ブラウザ対応
 
-### 8.1 対応ブラウザ
+### 9.1 対応ブラウザ
 
 | ブラウザ | バージョン | 対応レベル |
 |----------|------------|------------|
@@ -658,26 +682,26 @@ sequenceDiagram
 - HTML/CSS設計を簡略化し、必要な機能に応じてバージョンを決定
 - 検証可能な環境に限定してしっかりとした品質を確保
 
-### 8.2 フォールバック
+### 9.2 フォールバック
 
 - **JavaScript無効**: 基本表示のみ（検索・フィルタ無効）
 
-## 9. テスト仕様 [暫定]
+## 10. テスト仕様 [暫定]
 
-### 9.1 単体テスト
+### 10.1 単体テスト
 
 - **検索機能**: クエリ処理、正規化、あいまい検索
 - **フィルタ機能**: 条件処理、複数選択
 - **ソート機能**: 文字列ソート、日本語対応
 - **データ変換**: CSV→JSON変換、バリデーション
 
-### 9.2 統合テスト
+### 10.2 統合テスト
 
 - **データフロー**: CSV取得→変換→表示
 - **GitHub Actions**: ワークフロー実行→デプロイ
 - **エラー処理**: エラー発生→通知→回復
 
-### 9.3 E2Eテスト（Playwright）
+### 10.3 E2Eテスト（Playwright）
 
 ```typescript
 test('楽曲検索機能', async ({ page }) => {
@@ -693,11 +717,11 @@ test('楽曲検索機能', async ({ page }) => {
 });
 ```
 
-## 10. 運用・監視 [暫定]
+## 11. 運用・監視 [暫定]
 
 **注意**: GitHub Pages（静的ホスティング）では従来的なサーバーログアクセスは不可能。監視手法は限定的。
 
-### 10.1 ログ出力
+### 11.1 ログ出力
 
 **GitHub Actions ログ**:
 - データ取得時間
@@ -710,7 +734,7 @@ test('楽曲検索機能', async ({ page }) => {
 - エラー発生状況（ブラウザConsole）
 - ユーザー操作統計（匿名、localStorage）
 
-### 10.2 監視項目（制約あり）
+### 11.2 監視項目（制約あり）
 
 - **サイト可用性**: 外部監視サービス利用（UptimeRobot等）
 - **データ更新**: GitHub Actions実行履歴確認

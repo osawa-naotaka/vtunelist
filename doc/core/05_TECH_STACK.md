@@ -15,7 +15,7 @@ VtuneListは完全無料・サーバーレス・静的サイト生成によるVT
 #### 選定理由
 
 - **SSG（静的サイト生成）対応**: GitHub Pages完全対応で無料運用可能
-- **JSON ファイル生成機能**: 楽曲データ変換処理に必須
+- **JSON ファイル生成機能**: 楽曲データを元に生成した検索インデックスを出力するために必須
 - **TypeScript + JSX**: 型安全性とコンポーネント指向開発の両立
 - **開発中フレームワーク**: 本プロジェクトと同時にzephblaze自体の改良も進行
 - **シンプルな設定**: 最小限の設定でプロダクション対応サイト構築
@@ -270,7 +270,7 @@ async function parseSongsCsv(csvData: string): Promise<Result<SongData[], string
 
 - **HTML**: 基本的な構造化のみ（minificationなし）
 - **CSS**: 基本的なバンドルのみ（未使用スタイル削除なし）
-- **JavaScript**: 将来的に実装予定（Tree Shaking + Minification）
+- **JavaScript**: tsupに実装されている機能のみ（Tree Shaking + Minification）
 - **画像**: 手動最適化（将来自動化予定）
 
 ### 検索パフォーマンス

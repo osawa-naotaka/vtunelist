@@ -66,7 +66,7 @@
   - デプロイメント設定
 
 #### Deliverable
-- DEVENV.md
+- 07_DEVENV.md
 - 開発環境設定ファイル（package.json, .gitignore等）
 - GitHub Actions ワークフロー（.github/workflows/）
 
@@ -92,7 +92,7 @@
 
 ##### 3.4.2 データ処理実装
 - [ ] CSV 取得・パース機能
-- [ ] JSON 変換機能
+- [ ] 検索インデックス(JSON) 取得機能
 - [ ] データバリデーション
 - [ ] エラーハンドリング
 

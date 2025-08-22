@@ -10,27 +10,27 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Browser Environment                       │
+│                        Browser Environment                      │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
 │  │   Presentation  │  │   Application   │  │      Data       │  │
 │  │      Layer      │  │      Layer      │  │     Layer       │  │
 │  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
-│           │                     │                     │          │
+│           │                     │                    │          │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
 │  │ UI Components   │  │ Search Engine   │  │ JSON Data Store │  │
 │  │ • SearchBox     │  │ (staticseek)    │  │ • songs.json    │  │
-│  │ • FilterPanel   │  │ • Query Parser  │  │ • search.json   │  │
+│  │ • FilterPanel   │  │ • Query Parser  │  │                 │  │
 │  │ • SongList      │  │ • Index Search  │  │                 │  │
 │  │ • SortControl   │  │ • Result Rank   │  └─────────────────┘  │
-│  │ • ErrorDisplay  │  └─────────────────┘           │          │
+│  │ • ErrorDisplay  │  └─────────────────┘            │          │
 │  └─────────────────┘           │                     │          │
-│           │                     │                     │          │
+│           │                    │                     │          │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
 │  │ DOM Handlers    │  │ State Manager   │  │ HTTP Client     │  │
 │  │ • Event Bind    │  │ • App State     │  │ • Fetch API     │  │
-│  │ • Render Queue  │  │ • UI State      │  │ • JSON Parse    │  │
-│  │ • Animation     │  │ • Error State   │  │ • Error Handle  │  │
+│  │ • Render Queue  │  │ • UI State      │  │ • Error Handle  │  │
+│  │ • Animation     │  │ • Error State   │  │                 │  │
 │  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -51,7 +51,7 @@ graph TD
     F --> H[Sort Manager]
     
     G --> I[Search Results]
-    H --> I
+    H --> J
     
     I --> J[Result Processor]
     J --> K[Render Engine]
