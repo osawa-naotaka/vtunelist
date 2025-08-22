@@ -650,12 +650,70 @@ sequenceDiagram
        - ジャンル: 同上
        - ソート順: searchをspawnするPromiseを生成する。そのPromiseにUIに存在するソート順を渡しておく。このPromiseでは、結果のソートまでを担当させる
      - 検索結果が検索実行順に反映されるとは限らないため、検索結果と入力欄が一致しない可能性がある
-       - searchが返すPromiseをQueueに積み、順番にDOMに反映させることで、検索結果と入力欄を一致させる
+       - 最新の検索結果のみを表示させる
+     - デバウンス処理を入れる。入力から200ms後に検索を行う
    - トースト表示管理(エラー時)
      - TBD(多分DOM更新箇所が独立している&CSSアニメーションで実行するので対処なしでOK)
    - アニメーション処理（存在すれば）
      - TBD(多分CSSアニメーションで実行するので対処なしでOK)
 
+#### 6.2.1 最新の検索結果のみを表示させるためのサンプル実装
+
+```typescript
+class SearchManager {
+    private currentSearchId = 0;
+    private isSearching = false;
+
+    async search(query: string): Promise<void> {
+        // 前の検索をキャンセル
+        const searchId = ++this.currentSearchId;
+        
+        if (this.isSearching) {
+            return; // デバウンス処理
+        }
+
+        this.isSearching = true;
+        
+        try {
+            const results = await staticseek.search(query);
+            
+            // 最新の検索かチェック
+            if (searchId === this.currentSearchId) {
+                this.updateDOM(results);
+            }
+        } finally {
+            this.isSearching = false;
+        }
+    }
+}
+```
+
+#### 6.2.2 デバウンス処理のサンプル実装
+
+```typescript
+function debounce<T extends (...args: any[]) => void>(
+    func: T,
+    delay: number
+): (...args: Parameters<T>) => void {
+    let timeoutId: number | null = null;
+    
+    return (...args: Parameters<T>) => {
+        if (timeoutId !== null) {
+            clearTimeout(timeoutId);
+        }
+        
+        timeoutId = setTimeout(() => {
+            func(...args);
+            timeoutId = null;
+        }, delay);
+    };
+}
+
+// 使用例
+const debouncedSearch = debounce((query: string) => {
+    searchManager.search(query);
+}, 200);
+```
 
 ## 7. セキュリティ仕様
 
@@ -664,7 +722,18 @@ sequenceDiagram
 - **個人情報**: 楽曲データに個人情報を含まない設計
 - **認証**: 管理画面なし（GitHub認証のみ）
 - **HTTPS**: GitHub Pages強制HTTPS
-- **XSS対策**: ユーザー入力のエスケープ処理
+- **XSS対策**: ユーザー入力のエスケープ処理（今回はおそらく必要ない）
+- **CSP**: default-src self指定
+
+```html
+<meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self';
+    img-src 'self';
+    connect-src 'self' https://*.googleapis.com;
+">
+```
 
 ### 7.2 アクセス制御
 
