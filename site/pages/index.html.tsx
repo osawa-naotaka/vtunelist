@@ -1,11 +1,22 @@
-import type { HRootPageFn } from 'zephblaze/core';
-import { Store } from 'zephblaze/core';
+import { page } from "@site/components/pages/page";
+import { DEFAULT_RESPONSIVE_PAGE_WIDTH, element, registerRootPage, style } from "zephblaze/core";
+import type { HRootPageFn, Store } from "zephblaze/core";
 
-export default function Root(_store: Store): HRootPageFn<void> {
+export default function Root(store: Store): HRootPageFn<void> {
+    const Page = page(store);
+    const PageMainArea = element("page-main-area", { tag: "main" });
+
+    const styles = [style(PageMainArea)(DEFAULT_RESPONSIVE_PAGE_WIDTH(store))];
+
+    registerRootPage(store, styles);
+
     return async () => {
+
         return (
-            <html>
-            </html>
+            <Page title="vtunelinst" description="vtunelist testpage" lang="ja">
+                <PageMainArea>
+                </PageMainArea>
+            </Page>
         );
     };
 }
