@@ -18,6 +18,6 @@
   },
   "type": "module",
   "dependencies": {
-    "zephblaze": "^0.1.0-alpha.4"
+    "zephblaze": "^0.1.0-alpha.5"
   }
 }
